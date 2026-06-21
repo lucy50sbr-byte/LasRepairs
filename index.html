@@ -1,0 +1,1546 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAS Repairs - Servicio Técnico Celular</title>
+    <!-- Fuentes e Iconos -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- Permite cargar imágenes de servidores externos que bloquean hotlinking -->
+    <meta name="referrer" content="no-referrer">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #f6f9fc;
+            color: #2d3436;
+            line-height: 1.6;
+        }
+        body.dark-mode {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+        }
+
+
+        header {
+            background: #ffffff;
+            padding: 15px 20px;
+            text-align: center;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.03);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        /* Dark mode styles for header */
+        body.dark-mode header {
+            background: #2d2d2d;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.2);
+        }
+
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .logo-box {
+            background: linear-gradient(135deg, #f28100 0%, #ff9a2e 100%);
+            color: white;
+            padding: 10px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(242, 129, 0, 0.2);
+        }
+
+        .logo-text h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #2d3436;
+            line-height: 1;
+        }
+        body.dark-mode .logo-text h1 { color: #e0e0e0; }
+
+        .logo-text span {
+            font-size: 1.1rem;
+            color: #b2bec3;
+            letter-spacing: 2px;
+        }
+
+        .hero {
+            max-width: 800px;
+            margin: 60px auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .hero h2 {
+            font-size: 2.5rem;
+            color: #1a1a1a;
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+        body.dark-mode .hero h2 { color: #e0e0e0; }
+
+        .hero h2 span {
+            color: #f28100;
+        }
+
+        .promo-badge {
+            display: inline-block;
+            background: linear-gradient(90deg, #f28100, #ff9a2e);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 12px 30px;
+            border-radius: 50px;
+            margin: 20px 0;
+            box-shadow: 0 8px 20px rgba(242, 129, 0, 0.25);
+        }
+
+        .services-container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .services-title {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        body.dark-mode .services-title { color: #e0e0e0; }
+
+        .grid-services {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 25px;
+        }
+
+        .service-card {
+            background: white;
+            padding: 40px 25px;
+            border-radius: 24px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        body.dark-mode .service-card { background: #2d2d2d; border-color: #444; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+
+        .service-card:hover, .service-card.active {
+            transform: translateY(-8px);
+            border-color: #f28100;
+            box-shadow: 0 20px 40px rgba(242, 129, 0, 0.2);
+        }
+
+        .service-card .icon {
+            font-size: 3.5rem;
+            color: #f28100;
+            margin-bottom: 15px;
+        }
+
+        .service-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #1a1a1a;
+        }
+        body.dark-mode .service-card h3 { color: #e0e0e0; }
+
+        /* Estilos de la Barra de Estado (Timeline) */
+        .status-timeline {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            position: relative;
+            padding: 10px 0;
+        }
+        .status-step {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #dfe6e9;
+            z-index: 2;
+        }
+        .status-step.active { background: #f28100; box-shadow: 0 0 8px #f28100; }
+        .status-line {
+            position: absolute;
+            top: 19px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #dfe6e9;
+            z-index: 1;
+        }
+
+        .catalog-section {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 40px;
+            min-height: 500px; /* Para que no se vea vacío al cargar */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.05);
+            display: none;
+        }
+        body.dark-mode .catalog-section { background: #2d2d2d; box-shadow: 0 15px 40px rgba(0,0,0,0.15); }
+
+        .catalog-header {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 25px;
+            width: 100%;
+        }
+        body.dark-mode .catalog-header { border-bottom-color: #444; }
+
+        .catalog-header h2 {
+            flex-basis: 100%;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        body.dark-mode .catalog-header h2 { color: #e0e0e0; }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #f0f0f0;
+            padding: 10px 15px;
+            border-radius: 50px;
+            flex: 1 1 280px;
+            border: 1px solid #eee;
+        }
+        body.dark-mode .search-box { background: #3a3a3a; border-color: #555; }
+        body.dark-mode .search-box .material-icons { color: #b2bec3; }
+        
+        .sort-box select {
+            border: 1px solid #eee;
+            background: #f0f0f0;
+            padding: 10px 15px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: #636e72;
+            outline: none;
+            cursor: pointer;
+        }
+        body.dark-mode .sort-box select { background: #3a3a3a; border-color: #555; color: #e0e0e0; }
+
+        .search-box input {
+            border: none;
+            background: transparent;
+            margin-left: 10px;
+            width: 100%;
+            font-size: 0.95rem;
+            outline: none;
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+        body.dark-mode .search-box input { color: #e0e0e0; }
+        body.dark-mode .search-box input::placeholder { color: #b2bec3; }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            flex: 1 1 auto;
+        }
+
+        .filter-btn {
+            border: 1px solid #e0e0e0;
+            background: #f0f0f0;
+            color: #2d3436;
+            padding: 8px 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        body.dark-mode .filter-btn { background: #3a3a3a; border-color: #555; color: #e0e0e0; }
+
+        .filter-btn.active, .filter-btn:hover {
+            background: #f28100;
+            color: white;
+            border-color: #f28100;
+            box-shadow: 0 4px 12px rgba(242, 129, 0, 0.2);
+        }
+
+        .btn-reset {
+            background: #dfe6e9;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            color: #636e72;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            width: 100%; /* Obliga a la cuadrícula a expandirse y mostrar varias columnas */
+        }
+
+        .model-card {
+            border: 1px solid #eee;
+            border-radius: 24px;
+            padding: 24px;
+            background: #ffffff;
+            transition: all 0.3s ease;
+        }
+        body.dark-mode .model-card { background: #2d2d2d; border-color: #444; }
+
+        .model-card:hover {
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transform: translateY(-4px);
+        }
+
+        .model-img {
+            width: 100%;
+            height: 160px;
+            object-fit: contain;
+            margin-bottom: 20px;
+            border-radius: 16px;
+            background: #ffffff;
+            padding: 10px;
+            border: 1px solid #eee;
+        }
+        body.dark-mode .model-img { background: #3a3a3a; border-color: #555; }
+
+        .model-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #1a1a1a;
+            height: 3.2rem;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        body.dark-mode .model-name { color: #e0e0e0; }
+
+        .quality-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+        }
+
+        .quality-badge {
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-china { background: #fff5eb; color: #f28100; }
+        .badge-original { background: #e8f8f0; color: #2ecc71; }
+        body.dark-mode .badge-china { background: rgba(242,129,0,0.2); color: #f28100; }
+        body.dark-mode .badge-original { background: rgba(46,204,113,0.2); color: #2ecc71; }
+
+        .price-tag {
+            font-weight: 800;
+            color: #1a1a1a;
+            font-size: 1.4rem;
+        }
+        body.dark-mode .price-tag { color: #e0e0e0; }
+
+        .guide-section {
+            background: #fff;
+            padding: 20px;
+            border-radius: 16px;
+            margin-top: 20px;
+            border: 1px dashed #f28100;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+        body.dark-mode .guide-section { background: #2d2d2d; color: #ccc; }
+
+        .install-note {
+            font-size: 0.75rem;
+            color: #b2bec3;
+            display: block;
+            text-align: right;
+            margin-top: -5px;
+        }
+
+        .card-actions {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column; /* Apila los botones verticalmente */
+            gap: 8px;
+        }
+
+        .btn-card-ws {
+            background: #25D366;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(37, 211, 102, 0.3);
+            flex: none;
+        }
+
+        .btn-pdf {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
+            cursor: pointer;
+            flex: none;
+        }
+        .btn-card-ws:hover, .btn-pdf:hover { opacity: 0.8; transform: scale(1.1); }
+
+        .catalog-empty-message {
+            text-align: center;
+            color: #636e72;
+            font-size: 1.1rem;
+            margin-top: 50px;
+            grid-column: 1 / -1; /* Ocupa todo el ancho en el grid */
+            width: 100%;
+        }
+        body.dark-mode .catalog-empty-message { color: #b2bec3; }
+
+
+        .btn-card-ws:hover { opacity: 0.9; }
+
+        .info-section {
+            background: #000;
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+            margin-top: 60px;
+        }
+
+        .info-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .map-container {
+            width: 100%;
+            margin-top: 30px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        /* Estilos para la sección de opiniones de clientes */
+        .reviews-section {
+            max-width: 1100px;
+            margin: 60px auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .reviews-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+        body.dark-mode .reviews-title { color: #e0e0e0; }
+
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .review-card {
+            background: white;
+            padding: 30px;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        body.dark-mode .review-card { background: #2d2d2d; border-color: #444; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+
+        .review-card:hover {
+            transform: translateY(-8px);
+            border-color: #f28100;
+            box-shadow: 0 20px 40px rgba(242, 129, 0, 0.2);
+        }
+
+        .review-header { margin-bottom: 15px; }
+        .star-icon { color: #f28100; font-size: 1.2rem; vertical-align: middle; }
+        .review-text { font-size: 0.95rem; color: #555; margin-bottom: 20px; flex-grow: 1; }
+        body.dark-mode .review-text { color: #ccc; }
+        .reviewer-name { font-weight: 600; color: #1a1a1a; font-size: 0.9rem; }
+        body.dark-mode .reviewer-name { color: #e0e0e0; }
+
+        .btn-maps {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #4285F4;
+            color: white;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1rem;
+            margin-top: 20px;
+            transition: background 0.3s;
+            box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
+        }
+        .btn-maps:hover { background: #357ae8; }
+
+        .info-item .icon {
+            color: #f28100;
+        }
+
+        .btn-whatsapp {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #25D366;
+            color: white;
+            text-decoration: none;
+            padding: 15px 35px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-top: 25px;
+            transition: background 0.3s;
+        }
+
+        .btn-whatsapp:hover {
+            background: #20ba59;
+        }
+
+        .social-links {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .social-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .social-links a:hover {
+            color: #f28100;
+        }
+
+        footer {
+            background: #111;
+            color: #777;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 0;
+        }
+
+        /* --- ESTILOS DEL ASISTENTE VIRTUAL --- */
+        .bot-group {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            z-index: 1100;
+        }
+
+        .dark-mode-toggle {
+            background: white;
+            border: 1px solid #eee;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #f28100;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+        body.dark-mode .dark-mode-toggle {
+            background: #2d2d2d;
+            border-color: #444;
+            color: #ffb84d;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .dark-mode-toggle:hover { transform: translateY(-3px); }
+
+        .bot-launcher {
+            background: #f28100;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 5px 25px rgba(242,129,0,0.4);
+            z-index: 1000;
+            transition: transform 0.2s;
+        }
+
+        .bot-launcher:hover {
+            transform: scale(1.05);
+        }
+
+        .chat-window {
+            position: fixed;
+            bottom: 160px; /* Ajustado para estar sobre el nuevo grupo */
+            right: 25px;
+            width: 350px;
+            height: 450px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.1);
+            animation: chatOpen 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes chatOpen {
+            from { transform: scale(0.8) translateY(20px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .chat-header {
+            background: #1a1a1a;
+            color: white;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-header h4 {
+            font-size: 1rem;
+            flex: 1;
+            font-weight: 600;
+        }
+
+        .chat-header .close-btn {
+            cursor: pointer;
+            color: rgba(255,255,255,0.6);
+        }
+
+        .chat-header .close-btn:hover { color: white; }
+
+        .chat-body {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-grow: 1; /* Permite que el cuerpo del chat ocupe el espacio disponible */
+            flex-direction: column;
+            gap: 10px;
+            background: #f8f9fc;
+        }
+
+        .msg {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .msg.bot {
+            background: white;
+            color: #2d3436;
+            align-self: flex-start;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        body.dark-mode .msg.bot { background: #3a3a3a; color: #e0e0e0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+
+        .msg.user {
+            background: #f28100;
+            color: white;
+            align-self: flex-end;
+            box-shadow: 0 4px 12px rgba(242,129,0,0.2);
+            font-weight: 600;
+        }
+
+        .chat-options {
+            padding: 10px 15px;
+            background: #f9f9f9;
+            border-top: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 150px; /* Limitar altura para que no ocupe toda la ventana */
+        }
+
+        .opt-btn {
+            background: white;
+            border: 1px solid #f28100;
+            color: #f28100;
+            padding: 10px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-align: left;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .opt-btn:hover {
+            background: #f28100;
+            color: white;
+        }
+        body.dark-mode .opt-btn { background: #444; border-color: #555; color: #e0e0e0; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-container">
+            <div class="logo-box">
+                <span class="material-icons" style="font-size: 40px;">build</span>
+            </div>
+            <div class="logo-text">
+                <h1>LAS</h1>
+                <span>REPAIRS</span>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h2>¿Problemas con tu smartphone?<br><span>¡Tu celular como nuevo en minutos!</span></h2>
+        
+        <div class="promo-badge">
+            -10% DE DESCUENTO EN TU PRIMERA REPARACIÓN
+        </div>
+        
+        <br>
+        <a href="https://wa.me/543516824581" target="_blank" class="btn-whatsapp">
+            <span class="material-icons">chat</span> Consultar por WhatsApp
+        </a>
+    </section>
+
+    <section class="services-container">
+        <h2 class="services-title">Nuestros Servicios Especializados</h2>
+        <div class="grid-services">
+            <div class="service-card" id="screen-service" onclick="toggleCatalog()">
+                <span class="material-icons icon">stay_current_portrait</span>
+                <h3>Reparación de pantallas</h3>
+                <small style="color: #f28100; font-weight: bold;">(Ver Lista de Precios)</small>
+            </div>
+            <div class="service-card" onclick="openBotWithOption('carga')">
+                <span class="material-icons icon">flash_on</span>
+                <h3>Problemas de carga</h3>
+            </div>
+            <div class="service-card" onclick="openBotWithOption('software')">
+                <span class="material-icons icon">memory</span>
+                <h3>Fallas de software</h3>
+            </div>
+            <div class="service-card" onclick="handleOption('canje')">
+                <span class="material-icons icon">currency_exchange</span>
+                <h3>¿Tomás mi usado?</h3>
+                <small style="color: #f28100; font-weight: bold;">(Calculadora de Canje)</small>
+            </div>
+            <div class="service-card" id="battery-service" onclick="toggleCatalog('bateria')">
+                <span class="material-icons icon">battery_charging_full</span>
+                <h3>Baterías</h3>
+                <small style="color: #f28100; font-weight: bold;">(Ver Lista de Precios)</small>
+            </div>
+        </div>
+    </section>
+
+    <section class="catalog-section" id="catalog-section">
+        <div class="catalog-header">
+            <h2 id="catalog-title">Presupuestos de Pantallas (Instalación Incluida)</h2>
+            <button id="update-btn" onclick="manualUpdate()" title="Actualizar desde Fast-Cheap" style="display: none; border: none; background: #f2f2f2; color: #666; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem; align-items: center; gap: 5px;">
+                <span class="material-icons" style="font-size: 1rem;">refresh</span> Actualizar Precios
+            </button>
+            <div class="search-box">
+                <span class="material-icons">search</span>
+                <input type="text" id="search-input" placeholder="Buscar modelo (ej: Moto G20)..." onkeyup="filterModels()">
+            </div>
+            <div class="sort-box">
+                <select id="sort-select" onchange="renderCatalog()">
+                    <option value="none">Ordenar por...</option>
+                    <option value="asc">Precio: Menor a Mayor</option>
+                    <option value="desc">Precio: Mayor a Menor</option>
+                </select>
+            </div>
+            <div class="filter-buttons" id="filter-buttons">
+                <button class="filter-btn active" onclick="filterBrand('all')">Todos</button>
+            </div>
+
+            <!-- Guía de Calidades (Informativo para el cliente) -->
+            <div class="guide-section">
+                <strong>💡 Ayuda: ¿Qué calidad elegir?</strong>
+                <div class="quality-guide-grid">
+                    <div>
+                        <span style="color:#2ecc71; font-weight:bold;">• Original / OLED:</span>
+                        Máximo brillo, colores vibrantes y menor consumo de batería. Es la que trae el celu de fábrica.
+                    </div>
+                    <div>
+                        <span style="color:#f28100; font-weight:bold;">• Premium / Incell:</span>
+                        La mejor relación precio-calidad. Es más económica, ideal si buscás algo funcional y accesible.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modules-grid" id="modules-container"></div>
+        <div id="see-more-container" style="text-align: center; margin-top: 40px; display: none;">
+            <button class="filter-btn" onclick="showAllItems()" style="background: #f28100; color: white; border: none; padding: 15px 40px; font-weight: 600; box-shadow: 0 8px 20px rgba(242, 129, 0, 0.2);">Ver más módulos</button>
+        </div>
+    </section>
+
+    <!-- INTERFAZ DEL ASISTENTE VIRTUAL -->
+    <div class="bot-group">
+        <button class="dark-mode-toggle" onclick="toggleDarkMode()" title="Cambiar modo">
+            <span class="material-icons" id="dark-mode-icon">dark_mode</span>
+        </button>
+        <div class="bot-launcher" onclick="toggleChat()">
+            <span class="material-icons" id="launcher-icon" style="font-size: 30px;">smart_toy</span>
+        </div>
+    </div>
+
+    <div class="chat-window" id="chat-window">
+        <div class="chat-header">
+            <span class="material-icons">smart_toy</span>
+            <h4>Asistente LAS Repairs</h4>
+            <span class="material-icons close-btn" onclick="toggleChat()">close</span>
+        </div>
+        <div class="chat-body" id="chat-body">
+            <div class="msg bot">¡Hola! 👋 Bienvenido a LAS Repairs. ¿En qué te puedo ayudar hoy?</div>
+        </div>
+        <div class="chat-options" id="chat-options">
+            <!-- Botones iniciales del menú -->
+            <button class="opt-btn" onclick="handleOption('pantalla')">📱 Presupuesto de Pantalla</button>
+            <button class="opt-btn" onclick="handleOption('otros')">🛠️ Otras fallas (Carga, Soft, Datos)</button>
+            <button class="opt-btn" onclick="handleOption('canje')">💰 Valorar mi Celular Usado</button>
+            <button class="opt-btn" onclick="handleOption('info')">📍 Ubicación y Horarios</button>
+            <button class="opt-btn" onclick="handleOption('estado')" style="border-color: #2ecc71; color: #2ecc71;">🔍 Estado de mi Reparación</button>
+            </div>
+        </div>
+    </div>
+
+    <section class="info-section">
+        <div class="info-content">
+            <div class="info-item">
+                <span class="material-icons icon">location_on</span>
+                <p>Pasaje Cachul 833</p>
+            </div>
+            <div class="info-item">
+                <span class="material-icons icon">schedule</span>
+                <p>Lunes a Sábado — 10 a 19 hs</p>
+            </div>
+            <div class="info-item">
+                <span class="material-icons icon">phone_android</span>
+                <p>351 6824581</p>
+            </div>
+            
+            <div class="map-container">
+                <!-- Mapa de Google Maps para Pasaje Cachul 833, Córdoba -->
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3404.760759367468!2d-64.2185672234552!3d-31.413794396324863!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9432a26569109001%3A0x6a0f670f9775f0a!2sPsje.%20Cachul%20833%2C%20X5000%20C%C3%B3rdoba!5e0!3m2!1ses-419!2sar!4v1718531234567!5m2!1ses-419!2sar" 
+                    width="100%" height="350" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+            
+            <a href="https://maps.app.goo.gl/TrohnyL3FaN8FV3h7" target="_blank" class="btn-maps">
+                <span class="material-icons">directions</span> Cómo llegar (Google Maps)
+            </a>
+
+            <div class="social-links">
+                <a href="#" target="_blank">📸 @LASRepairs</a>
+                <a href="#" target="_blank">👤 @LASRepairs</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 LAS Repairs. Gracias por su confianza.</p>
+    </footer>
+
+    <script>
+        // Iniciamos vacío para cargar desde la fuente externa
+        let repuestosBase = [];
+        let ultimaActualizacion = "";
+        
+        // Intentamos primero el archivo local (para cuando la web es pública)
+        // Si falla, intentamos el servidor local (para cuando estás probando el bot)
+        const JSON_URL = "precios.json";
+        const API_URL = "http://localhost:5000/api/precios";
+        const UPDATE_URL = "http://localhost:5000/api/actualizar";
+
+        // Multiplicador: Costo + el doble (Costo + 2*Costo = Costo * 3)
+        const MARGEN_GANANCIA = 3;
+
+        let brandFiltered = 'all';
+        let qualityFiltered = 'all';
+        let currentProductType = 'modulo'; // 'modulo' o 'bateria'
+        let showAll = false;
+
+        function toggleCatalog(type = 'modulo') {
+            const catalog = document.getElementById('catalog-section');
+            const card = document.getElementById('screen-service');
+            const batteryCard = document.getElementById('battery-service');
+            const catalogTitle = document.getElementById('catalog-title');
+
+            // Si ya está abierto y es el mismo tipo, lo cerramos
+            if(catalog.style.display === 'flex' && currentProductType === type) {
+                catalog.style.display = 'none';
+                card.classList.remove('active');
+                batteryCard.classList.remove('active');
+            } else {
+                catalog.style.display = 'flex'; // Usamos flex para centrar el mensaje de carga
+                card.classList.add('active');
+                batteryCard.classList.remove('active'); // Desactivar la otra tarjeta
+                
+                currentProductType = type;
+                brandFiltered = 'all'; // Resetear filtro de marca al cambiar de tipo
+                qualityFiltered = 'all'; // Resetear filtro de calidad
+                showAll = false; // Resetear "Ver más"
+
+                if (type === 'modulo') {
+                    card.classList.add('active');
+                    catalogTitle.innerText = "Presupuestos de Pantallas (Instalación Incluida)";
+                } else if (type === 'bateria') {
+                    batteryCard.classList.add('active');
+                    catalogTitle.innerText = "Presupuestos de Baterías (Instalación Incluida)";
+                }
+
+                catalog.scrollIntoView({ behavior: 'smooth' });
+                generateFilterButtons(); // Regenerar botones de filtro para el nuevo tipo
+                renderCatalog();
+            }
+        }
+
+        async function loadPrices() {
+            // Cargar preferencia de modo oscuro
+            if (localStorage.getItem('darkMode') === 'enabled') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('dark-mode-icon').innerText = 'light_mode';
+            } else {
+                document.body.classList.remove('dark-mode');
+                document.getElementById('dark-mode-icon').innerText = 'dark_mode';
+            }
+
+            const container = document.getElementById('modules-container');
+            container.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">Cargando lista de precios...</p>';
+            
+            try {
+                // 1. Intentamos obtener datos directamente del Bot (API Local)
+                let data = null;
+                // 1. Verificamos si el servidor local (bot) está encendido para mostrar el botón
+                try {
+                    const apiCheck = await fetch(API_URL);
+                    if (apiCheck.ok) {
+                        const response = await fetch(API_URL);
+                        data = await response.json();
+                        document.getElementById('update-btn').style.display = 'inline-flex'; // Mostrar botón de actualización
+                        console.log("Bot detectado: Modo actualización habilitado.");
+                    }
+                } catch(e) {
+                    console.log("Bot no detectado (Modo público/estático).");
+                    document.getElementById('update-btn').style.display = 'none'; // Asegurarse de que no se muestre si no hay bot
+                }
+
+                // 2. Cargamos los datos (prioridad al JSON local por velocidad)
+                const response = await fetch(JSON_URL);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    repuestosBase = data.lista;
+                    ultimaActualizacion = data.ultima_actualizacion;
+                }
+                
+                showAll = false; // Resetear showAll al cargar precios
+                generateFilterButtons();
+                renderCatalog();
+            } catch (error) {
+                console.error("Error:", error);
+                container.innerHTML = `<p style="color:red; text-align:center; grid-column: 1/-1;">No se pudieron cargar los precios.<br><small>Asegúrate de que el Bot esté corriendo o de que el archivo precios.json exista en la carpeta.</small></p>`;
+            }
+            if (data && data.lista) {
+                repuestosBase = data.lista;
+                ultimaActualizacion = data.ultima_actualizacion;
+            }
+        }
+
+        async function manualUpdate() {
+            const btn = document.getElementById('update-btn');
+            const container = document.getElementById('modules-container');
+            
+            if (!confirm("Esto iniciará el bot para obtener precios reales de Fast-Cheap. ¿Deseas continuar?")) return;
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-icons" style="font-size: 1rem;">sync</span> Actualizando...';
+            container.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">El bot está trabajando. Esto demorará unos 30 segundos...</p>';
+
+            try {
+                const response = await fetch(UPDATE_URL, { method: 'POST' });
+                const data = await response.json();
+                repuestosBase = data.lista || data;
+                ultimaActualizacion = data.ultima_actualizacion;
+                currentProductType = 'modulo'; // Volver al catálogo de módulos por defecto
+                showAll = false;
+                renderCatalog();
+                alert("¡Precios actualizados con éxito en precios.json!");
+            } catch (error) {
+                alert("Error al conectar con el bot. Asegúrate de que app.py esté corriendo.");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span class="material-icons" style="font-size: 1rem;">refresh</span> Actualizar Precios';
+            }
+        }
+
+        function generateFilterButtons() {
+            const btnContainer = document.getElementById('filter-buttons');
+            if (!btnContainer) { console.warn("Contenedor 'filter-buttons' no encontrado."); return; }
+
+            const itemsActuales = repuestosBase.filter(item => item.type === currentProductType);
+            const marcasDisponibles = [...new Set(itemsActuales.map(item => item.marca))].sort();
+            
+            // Cálculo de contadores para calidad
+            const countOled = itemsActuales.filter(item => {
+                const n = item.modelo.toUpperCase();
+                return n.includes("OLED") || n.includes("ORIGINAL") || (item.type === 'bateria' && item.marca === 'iPhone');
+            }).length;
+            
+            const countIncell = itemsActuales.filter(item => {
+                const n = item.modelo.toUpperCase();
+                return n.includes("INCELL") || n.includes("PREMIUM");
+            }).length;
+
+            let html = `<div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                            <span style="font-size: 0.8rem; color: #b2bec3;">Filtrar por Marca</span>
+                            <button class="btn-reset" onclick="resetAllFilters()">Limpiar Filtros</button>
+                        </div>`;
+            
+            html += `<button class="filter-btn ${brandFiltered === 'all' ? 'active' : ''}" onclick="filterBrand('all')">Todas</button>`;
+            marcasDisponibles.forEach(marca => {
+                const count = itemsActuales.filter(i => i.marca === marca).length;
+                html += `<button class="filter-btn ${brandFiltered === marca ? 'active' : ''}" onclick="filterBrand('${marca}')">${marca} (${count})</button>`;
+            });
+
+            html += `<div style="width: 100%; text-align: center; font-size: 0.8rem; color: #b2bec3; margin-top: 15px; margin-bottom: 5px;">Filtrar por Calidad</div>`;
+            html += `<button class="filter-btn ${qualityFiltered === 'all' ? 'active' : ''}" onclick="filterQuality('all')">Cualquiera (${itemsActuales.length})</button>`;
+            html += `<button class="filter-btn ${qualityFiltered === 'oled' ? 'active' : ''}" onclick="filterQuality('oled')">Original / OLED (${countOled})</button>`;
+            html += `<button class="filter-btn ${qualityFiltered === 'incell' ? 'active' : ''}" onclick="filterQuality('incell')">Premium / Incell (${countIncell})</button>`;
+            
+            btnContainer.innerHTML = html;
+        }
+
+        function showAllItems() {
+            showAll = true;
+            renderCatalog();
+        }
+
+        function renderCatalog() {
+            const container = document.getElementById('modules-container');
+            const seeMoreContainer = document.getElementById('see-more-container');
+            const sortVal = document.getElementById('sort-select').value;
+            container.innerHTML = '';
+            
+            let searchInput = document.getElementById('search-input').value.toLowerCase();
+
+            // Atajo inteligente: si escribe "bateria" o "pila", cambiamos el tipo
+            if (searchInput.includes("bateria") || searchInput.includes("pila")) {
+                if (currentProductType !== 'bateria') {
+                    toggleCatalog('bateria');
+                    return;
+                }
+                searchInput = searchInput.replace("bateria", "").replace("pila", "").trim();
+            }
+            
+            // Filtrar primero por tipo de producto, luego por marca y búsqueda
+            let filtrados = repuestosBase.filter(item =>
+                (item.type || 'modulo') === currentProductType &&
+                item.modelo.toLowerCase().includes(searchInput) && 
+                (brandFiltered === 'all' || item.marca === brandFiltered)
+            );
+
+            // Aplicar filtro de calidad (Corregido)
+            if (qualityFiltered !== 'all') {
+                filtrados = filtrados.filter(item => {
+                    const nombreUpper = item.modelo.toUpperCase();
+                    const isOled = nombreUpper.includes("OLED") || 
+                                   nombreUpper.includes("ORIGINAL") || 
+                                   (currentProductType === 'bateria' && item.marca === 'iPhone');
+                    const isPremium = nombreUpper.includes("INCELL") || 
+                                      nombreUpper.includes("PREMIUM");
+
+                    if (qualityFiltered === 'oled') return isOled;
+                    if (qualityFiltered === 'incell') return isPremium;
+                    return true;
+                });
+            }
+
+            if (filtrados.length === 0) {
+                const customMsg = encodeURIComponent(`Hola LAS Repairs! 👋 No encontré mi modelo en el buscador: "${searchInput}". ¿Me podrían pasar un presupuesto?`);
+                container.innerHTML = `
+                    <div class="catalog-empty-message">
+                        <p>No encontramos resultados para "<strong>${searchInput}</strong>".</p>
+                        <a href="https://wa.me/543516824581?text=${customMsg}" class="btn-custom-quote">
+                            <span class="material-icons">whatsapp</span> Consultar por mi modelo
+                        </a>
+                    </div>`;
+                if(seeMoreContainer) seeMoreContainer.style.display = 'none';
+                return;
+            }
+
+            // Calculamos precios y preparamos para ordenar
+            const processedItems = filtrados.map(item => {
+                let costo = item.costoChina;
+                let multiplicador = 3; // Por defecto para repuestos económicos
+
+                // Margen escalonado para no encarecer repuestos caros
+                if (costo > 100000) multiplicador = 1.2;      // Gama Alta (Ej: Nubia)
+                else if (costo > 50000) multiplicador = 2.1; // Gama Media
+                else if (costo > 20000) multiplicador = 2.5; // Gama Entrada
+                
+                let p = Math.round(costo * multiplicador);
+                
+                // Aseguramos un mínimo de mano de obra
+                if (currentProductType === 'modulo') p += 15000; 
+                if (currentProductType === 'bateria' && item.marca === 'iPhone') p += 20000;
+                
+                // Redondeo de negocio: siempre hacia arriba al múltiplo de 500 más cercano
+                const precioRedondeado = Math.ceil(p / 500) * 500;
+
+                // Cálculo de cuotas (Sugerencia 3)
+                // Usamos un coeficiente de 1.15 para 3 cuotas con interés (15% adicional)
+                const precioCuotas = precioRedondeado * 1.15;
+                const valorCuota = Math.ceil((precioCuotas / 3) / 100) * 100;
+                
+                return { 
+                    ...item, 
+                    precioFinal: precioRedondeado,
+                    cuotas: valorCuota
+                };
+            });
+
+            // Aplicar ordenamiento
+            if (sortVal === 'asc') processedItems.sort((a, b) => a.precioFinal - b.precioFinal);
+            if (sortVal === 'desc') processedItems.sort((a, b) => b.precioFinal - a.precioFinal);
+
+            const limit = 30;
+            const itemsToDisplay = showAll ? processedItems : processedItems.slice(0, limit);
+
+            if (!showAll && processedItems.length > limit) {
+                if(seeMoreContainer) seeMoreContainer.style.display = 'block';
+            } else {
+                if(seeMoreContainer) seeMoreContainer.style.display = 'none';
+            }
+
+            itemsToDisplay.forEach(item => {
+                    const productLabel = currentProductType === 'modulo' ? 'pantalla' : 'batería';
+                    const wsMsg = encodeURIComponent(`Hola LAS Repairs! 👋 Consulto por el cambio de ${productLabel} para mi ${item.marca} ${item.modelo} ($${item.precioFinal.toLocaleString()}). ¿Tienen turno disponible?`);
+                    
+                    // Lógica de etiquetas de calidad
+                    let badgeText = "Precio Final";
+                    let badgeClass = "badge-china";
+                    
+                    const nombreUpper = item.modelo.toUpperCase();
+                    if (nombreUpper.includes("OLED") || nombreUpper.includes("ORIGINAL") || (currentProductType === 'bateria' && item.marca === 'iPhone')) {
+                        badgeText = "Calidad Original / OLED";
+                        badgeClass = "badge-original";
+                    } else if (nombreUpper.includes("INCELL") || nombreUpper.includes("PREMIUM")) {
+                        badgeText = "Calidad Premium";
+                        badgeClass = "badge-china";
+                    }
+
+                    const card = document.createElement('div');
+                    card.className = 'model-card';
+                    card.innerHTML = `
+                        ${item.imagen ? `<img src="${item.imagen}" alt="${item.modelo}" class="model-img" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/300x200?text=Imagen+No+Disponible'">` : ''}
+                        <div class="model-name">${item.marca} ${item.modelo}</div>
+                        <div class="quality-row">
+                            <span class="quality-badge ${badgeClass}">${badgeText}</span>
+                            <div style="text-align: right;">
+                                <div style="font-size: 0.7rem; color: #2ecc71; font-weight: bold; margin-bottom: -5px;">EFECTIVO / TRANSFERENCIA</div>
+                                <span class="price-tag">$${item.precioFinal.toLocaleString()}</span>
+                                <span class="installment-tag">3 cuotas de $${item.cuotas.toLocaleString()}</span>
+                                <span class="install-note">con instalación</span>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <a href="https://wa.me/543516824581?text=${wsMsg}" target="_blank" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                                <div class="btn-card-ws">
+                                    <span class="material-icons" style="font-size:1.2rem">whatsapp</span>
+                                </div>
+                                <span style="color: #25D366; font-weight: 700; font-size: 0.85rem;">Consultar Turno</span>
+                            </a>
+                            <div onclick='descargarPresupuesto(${JSON.stringify(item).replace(/"/g, "&quot;")})' style="cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                                <div class="btn-pdf">
+                                    <span class="material-icons" style="font-size:1.2rem">picture_as_pdf</span>
+                                </div>
+                                <span style="color: #e74c3c; font-weight: 700; font-size: 0.85rem;">Descargar Presupuesto</span>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+            });
+        }
+
+        // GENERADOR DE PDF (Sugerencia 1)
+        function descargarPresupuesto(item) {
+            const { jsPDF } = window.jspdf;
+            const doc = jsPDF();
+            const fecha = new Date().toLocaleDateString();
+            
+            // Configuración estética
+            doc.setFillColor(242, 129, 0); // Color LAS (Naranja)
+            doc.rect(0, 0, 210, 40, 'F');
+            
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(22);
+            doc.setFont("helvetica", "bold");
+            doc.text("LAS REPAIRS", 20, 20);
+            doc.setFontSize(10);
+            doc.text("SERVICIO TÉCNICO PROFESIONAL", 20, 28);
+            
+            doc.setTextColor(45, 52, 54);
+            doc.setFontSize(16);
+            doc.text("PRESUPUESTO FORMAL", 20, 60);
+            
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "normal");
+            doc.text(`Fecha: ${fecha}`, 150, 60);
+            doc.text(`Válido por: 5 días corridos`, 150, 65);
+            
+            // Detalles del equipo
+            doc.line(20, 70, 190, 70);
+            doc.setFont("helvetica", "bold");
+            doc.text("Detalle del Servicio:", 20, 85);
+            doc.setFont("helvetica", "normal");
+            doc.text(`Equipo: ${item.marca} ${item.modelo}`, 20, 95);
+            doc.text(`Repuesto: ${item.type === 'modulo' ? 'Módulo / Pantalla' : 'Batería Nueva'}`, 20, 105);
+            doc.text("Incluye: Repuesto + Mano de obra especializada + Limpieza técnica", 20, 115);
+            
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "bold");
+            doc.text(`TOTAL A PAGAR: $${item.precioFinal.toLocaleString()}`, 20, 140);
+            
+            // Nota de Garantía
+            doc.setFontSize(10);
+            doc.setTextColor(100, 100, 100);
+            doc.text("Nota: Este presupuesto incluye repuesto original/premium y mano de obra.", 20, 155);
+            doc.text("Garantía: 90 días por defectos de fabricación (no cubre daños físicos).", 20, 162);
+            
+            doc.setFontSize(9);
+            doc.text("Ubicación: Pasaje Cachul 833 | WhatsApp: 351 6824581", 105, 280, { align: "center" });
+            
+            doc.save(`Presupuesto_LAS_${item.modelo.replace(/\//g, '_')}.pdf`);
+        }
+
+        function filterBrand(brand) {
+            brandFiltered = brand;
+            generateFilterButtons(); // Actualiza visualmente qué botón de marca está activo
+            showAll = false;
+            renderCatalog();
+        }
+
+        function filterQuality(quality) {
+            qualityFiltered = quality;
+            generateFilterButtons(); // Actualiza visualmente qué botón de calidad está activo
+            showAll = false;
+            renderCatalog();
+        }
+
+        function resetAllFilters() {
+            brandFiltered = 'all';
+            qualityFiltered = 'all';
+            document.getElementById('search-input').value = '';
+            showAll = false;
+            generateFilterButtons();
+            renderCatalog();
+        }
+
+        function filterModels() { 
+            showAll = false;
+            renderCatalog(); 
+        }
+        
+        // Al cargar la página, buscamos los precios frescos
+        window.onload = loadPrices;
+
+
+        // LOGICA DEL ASISTENTE VIRTUAL
+        function toggleChat() {
+            const win = document.getElementById('chat-window');
+            win.style.display = (win.style.display === 'flex') ? 'none' : 'flex';
+        }
+
+        function openBotWithOption(optionKey) {
+            const win = document.getElementById('chat-window');
+            win.style.display = 'flex';
+            // Si es una opción de "otras fallas", redirigimos al menú de "otros"
+            if(optionKey === 'carga' || optionKey === 'software') {
+                handleOption('otros');
+            }
+        }
+
+        function showTyping(callback) {
+            const body = document.getElementById('chat-body');
+            const t = document.createElement('div');
+            t.className = 'msg bot';
+            t.id = 'typing-ind';
+            t.innerHTML = '<div style="display:flex; gap:4px; padding: 2px 0;"><span style="width:6px;height:6px;background:#bbb;border-radius:50%;animation:pulse 1s infinite"></span><span style="width:6px;height:6px;background:#bbb;border-radius:50%;animation:pulse 1s infinite 0.2s"></span><span style="width:6px;height:6px;background:#bbb;border-radius:50%;animation:pulse 1s infinite 0.4s"></span></div>';
+            body.appendChild(t);
+            body.scrollTop = body.scrollHeight;
+            setTimeout(() => {
+                t.remove();
+                callback();
+            }, 1000);
+        }
+
+        function addMessage(text, sender) {
+            const body = document.getElementById('chat-body');
+            const m = document.createElement('div');
+            m.className = `msg ${sender}`;
+            m.innerText = text;
+            body.appendChild(m);
+            body.scrollTop = body.scrollHeight;
+        }
+
+        function handleOption(key) {
+            const optionsDiv = document.getElementById('chat-options');
+            optionsDiv.innerHTML = "";
+            
+            if(key === 'pantalla') {
+                addMessage("📱 Solicitar Presupuesto", "user");
+                showTyping(() => {
+                    addMessage("Perfecto. Contamos con una lista actualizada de precios con instalación incluida.", "bot");
+                    showTyping(() => {
+                        addMessage("¿Qué estás buscando reparar?", "bot");
+                        optionsDiv.innerHTML = `
+                            <button class="opt-btn" onclick="startBudgetFlow('modulo')">📱 Pantalla (Módulo)</button>
+                            <button class="opt-btn" onclick="startBudgetFlow('bateria')">🔋 Cambio de Batería</button>
+                            <button class="opt-btn" onclick="resetMenu()" style="border-color:#ccc; color:#666;">⬅️ Volver atrás</button>
+                        `;
+                    });
+                });
+            } 
+            else if(key === 'otros' || key === 'bateria') { // Ahora 'otros' también maneja la opción de batería
+                addMessage("🛠️ Otras fallas técnico", "user");
+                showTyping(() => {
+                    addMessage("Para problemas de pin de carga, fallas de software o cambio de baterías, los presupuestos varían según el modelo.", "bot");
+                    showTyping(() => {
+                        addMessage("Podés ver los precios de baterías en nuestro catálogo o hablar directo con el técnico por WhatsApp.", "bot");
+                        optionsDiv.innerHTML = `
+                            <a href="https://wa.me/543516824581?text=Hola,%20necesito%20un%20presupuesto%20tecnico" target="_blank" class="btn-whatsapp" style="margin:5px 0; font-size:1rem; padding:10px 20px; width:100%; justify-content:center;">📲 Ir a WhatsApp</a>
+                            <button class="opt-btn" onclick="resetMenu()">⬅️ Volver al menú</button> <!-- Este botón ahora es más genérico -->
+                        `;
+                    });
+                });
+            }
+            else if(key === 'info') {
+                addMessage("📍 Ubicación y Horarios", "user");
+                showTyping(() => {
+                    addMessage("📍 Estamos en Pasaje Cachul 833.\n⏰ Atendemos de Lunes a Sábado de 10 a 19 hs.", "bot");
+                    showTyping(() => {
+                        addMessage("¡Te esperamos! Recordá que tenés un 10% de descuento en tu primera reparación.", "bot");
+                        optionsDiv.innerHTML = `
+                            <a href="https://maps.app.goo.gl/TrohnyL3FaN8FV3h7" target="_blank" class="opt-btn" style="text-decoration:none; display:block; border-color:#4285F4; color:#4285F4;">🗺️ Ver en Google Maps</a>
+                            <button class="opt-btn" onclick="resetMenu()">⬅️ Entendido, volver</button>
+                        `;
+                    });
+                });
+            }
+            else if(key === 'canje') {
+                addMessage("💰 Valorar mi Celular Usado", "user");
+                showTyping(() => {
+                    addMessage("¡Claro! Tomamos equipos en parte de pago. Para darte un valor estimado, necesito saber el modelo y si la pantalla y batería funcionan bien.", "bot");
+                    setTimeout(() => {
+                        const mod = prompt("¿Qué modelo es? (Ej: Samsung A51)");
+                        if(mod) {
+                            addMessage(`Modelo: ${mod}. ¿Funciona todo OK? (Si/No)`, "bot");
+                            const estado = prompt("¿Funciona todo OK? (Si/No)");
+                            showTyping(() => {
+                                const valorBase = 150000; // Esto podrías sacarlo de una lista real
+                                const final = estado.toLowerCase() === 'si' ? valorBase : valorBase * 0.5;
+                                addMessage(`Estimado para un ${mod}: $${final.toLocaleString()}. El valor final se da tras revisión técnica en el local.`, "bot");
+                                resetMenu();
+                            });
+                        } else { resetMenu(); }
+                    }, 500);
+                });
+            }
+            else if(key === 'estado') {
+                addMessage("🔍 Consultar mi Reparación", "user");
+                showTyping(() => {
+                    addMessage("Por favor, ingresa tu número de ticket (ej: 1001):", "bot");
+                    setTimeout(() => {
+                        const mockTicket = prompt("Ingresa tu nro de ticket:");
+                        if(mockTicket) {
+                            fetch(`http://localhost:5000/api/estado/${mockTicket}`)
+                                .then(res => res.json())
+                                .then(data => {
+                                    addMessage(data.msg, "bot");
+                                    if(data.paso > 0) {
+                                        const timeline = document.createElement('div');
+                                        timeline.className = 'status-timeline';
+                                        timeline.innerHTML = '<div class="status-line"></div>';
+                                        for(let i=1; i<=4; i++) {
+                                            timeline.innerHTML += `<div class="status-step ${i <= data.paso ? 'active' : ''}"></div>`;
+                                        }
+                                        document.getElementById('chat-body').appendChild(timeline);
+                                    }
+                                    resetMenu();
+                                });
+                        } else {
+                            resetMenu();
+                        }
+                    }, 500);
+                });
+            }
+        }
+
+        function startBudgetFlow(type) {
+            const label = type === 'modulo' ? "Pantalla" : "Batería";
+            addMessage(label, "user");
+            showTyping(() => {
+                addMessage(`Excelente. Tenemos stock de ${label.toLowerCase()}s para muchísimas marcas.`, "bot");
+                showTyping(() => {
+                    addMessage("¿De qué marca es tu equipo?", "bot");
+                    const optionsDiv = document.getElementById('chat-options');
+                    
+                    const marcasRaw = [...new Set(repuestosBase.filter(item => (item.type || 'modulo') === type).map(item => item.marca))].sort();
+                    const principales = ["Samsung", "Motorola", "iPhone", "Xiaomi"];
+                    const otras = marcasRaw.filter(m => !principales.includes(m) && m !== "Otros");
+                    
+                    let btns = principales.filter(m => marcasRaw.includes(m)).map(m => 
+                        `<button class="opt-btn" onclick="askModel('${m}', '${type}')">${m}</button>`
+                    ).join('');
+                    
+                    if(otras.length > 0) btns += `<button class="opt-btn" onclick="showOtherBrands('${type}')">Otras marcas...</button>`;
+                    btns += `<button class="opt-btn" onclick="handleOption('pantalla')" style="border-color:#ccc; color:#666;">⬅️ Atrás</button>`;
+                    optionsDiv.innerHTML = btns;
+                });
+            });
+        }
+
+        function showOtherBrands(type) {
+            const optionsDiv = document.getElementById('chat-options');
+            const marcasRaw = [...new Set(repuestosBase.filter(item => (item.type || 'modulo') === type).map(item => item.marca))].sort();
+            const principales = ["Samsung", "Motorola", "iPhone", "Xiaomi"];
+            const otras = marcasRaw.filter(m => !principales.includes(m) && m !== "Otros");
+            
+            optionsDiv.innerHTML = otras.map(m => 
+                `<button class="opt-btn" onclick="askModel('${m}', '${type}')">${m}</button>`
+            ).join('') + `<button class="opt-btn" onclick="startBudgetFlow('${type}')" style="border-color:#ccc; color:#666;">⬅️ Atrás</button>`;
+        }
+
+        function askModel(marca, type) {
+            const label = type === 'modulo' ? "módulos" : "baterías";
+            addMessage(marca, "user");
+            showTyping(() => {
+                addMessage(`¡Genial! Tenemos stock de ${label} para ${marca}. Acabo de filtrar la lista de abajo para que veas los modelos disponibles.`, "bot");
+                
+                const catalog = document.getElementById('catalog-section');
+                const catalogTitle = document.getElementById('catalog-title');
+                
+                // Actualiza el estado global de la web
+                currentProductType = type;
+                brandFiltered = marca;
+                qualityFiltered = 'all'; // Reseteamos calidad al usar el bot
+                showAll = false;
+                
+                // Ajusta la UI del catálogo
+                catalog.style.display = 'flex';
+                if (type === 'modulo') {
+                    catalogTitle.innerText = "Presupuestos de Pantallas (Instalación Incluida)";
+                } else {
+                    catalogTitle.innerText = "Presupuestos de Baterías (Instalación Incluida)";
+                }
+                
+                generateFilterButtons();
+                renderCatalog();
+                catalog.scrollIntoView({ behavior: 'smooth' });
+
+                resetMenu();
+            });
+        }
+
+        function resetMenu() {
+            document.getElementById('chat-options').innerHTML = `
+                <button class="opt-btn" onclick="handleOption('pantalla')">📱 Presupuesto de Pantalla</button>
+                <button class="opt-btn" onclick="handleOption('otros')">🛠️ Otras fallas (Carga, Soft, Baterías)</button>
+                <button class="opt-btn" onclick="handleOption('info')">📍 Ubicación y Horarios</button>
+            `;
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.getElementById('dark-mode-icon');
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('darkMode', 'enabled');
+                icon.innerText = 'light_mode';
+            } else {
+                localStorage.setItem('darkMode', 'disabled');
+                icon.innerText = 'dark_mode';
+            }
+        }
+    </script>
+</body>
+</html>
